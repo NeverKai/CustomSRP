@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 namespace Core
 {
-    public class CameraRender : MonoBehaviour
+    public partial class CameraRender : MonoBehaviour
     {
         private ScriptableRenderContext _context;
         private Camera _camera;
@@ -17,28 +17,39 @@ namespace Core
 
         private CullingResults _cullingResults;
 
-        private static ShaderTagId unlintShaderTagId = new ShaderTagId("SRPDefaultUnlit");
+        private static ShaderTagId UnlintShaderTagId = new ShaderTagId("SRPDefaultUnlit");
+        private static ShaderTagId LitlintShaderTagId = new ShaderTagId("CustomLit");
 
         public void Render(ScriptableRenderContext context, Camera camera)
         {
             _context = context;
             _camera = camera;
             
+            // 把game view渲染的所有物体同步到scene view
+            PrepareForSceneWindow();
+            PrepareBuffer();
             if(!Cull()) return;
 
             Setup();
-            DrawVisibleGeometry();
+            DrawVisibleGeometry(true, true);
+            DrawGizmos();
             Submit();
         }
 
         void Setup()
         {
+            var clearFlags = _camera.clearFlags;
+            _buffer.ClearRenderTarget(clearFlags <= CameraClearFlags.Depth, 
+                clearFlags == CameraClearFlags.Color,
+                clearFlags == CameraClearFlags.Color ? _camera.backgroundColor.linear : Color.clear);
             _buffer.ClearRenderTarget(true, true, Color.clear);
-            _buffer.BeginSample(BUFFER_NAME);
             _context.SetupCameraProperties(_camera);
+
+            _buffer.BeginSample(SampleName);
+            ExecuteBuffer();
         }
         
-        void DrawVisibleGeometry()
+        void DrawVisibleGeometry(bool enableDynamicBatching, bool enableInstancing)
         {
 
             var sortingSettings = new SortingSettings(_camera)
@@ -46,18 +57,29 @@ namespace Core
                 criteria = SortingCriteria.CommonOpaque
             };
             
-            var drawingSettings = new DrawingSettings(unlintShaderTagId, sortingSettings);
-            var filteringSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawingSettings = new DrawingSettings(UnlintShaderTagId, sortingSettings)
+            {
+                enableDynamicBatching = enableDynamicBatching,
+                enableInstancing = enableInstancing
+            };
             
+            drawingSettings.SetShaderPassName(1, LitlintShaderTagId);
+            
+            var filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
+            
+            // 渲染不透明
             _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
             
             _context.DrawSkybox(_camera);
+
+            sortingSettings.criteria = SortingCriteria.CommonTransparent;
+            filteringSettings.renderQueueRange = RenderQueueRange.transparent;
+            _context.DrawRenderers(_cullingResults, ref drawingSettings, ref filteringSettings);
         }
 
         void Submit()
         {
-            _buffer.EndSample(BUFFER_NAME);
-            // ExecuteBuffer();
+            _buffer.EndSample(SampleName);
             _context.Submit();
         }
 
