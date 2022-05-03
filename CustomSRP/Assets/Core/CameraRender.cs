@@ -20,7 +20,9 @@ namespace Core
         private static ShaderTagId UnlintShaderTagId = new ShaderTagId("SRPDefaultUnlit");
         private static ShaderTagId LitlintShaderTagId = new ShaderTagId("CustomLit");
 
-        public void Render(ScriptableRenderContext context, Camera camera)
+        public void Render(ScriptableRenderContext context, 
+            Camera camera,
+            ShadowSettings shadowSettings)
         {
             _context = context;
             _camera = camera;
@@ -28,7 +30,7 @@ namespace Core
             // 把game view渲染的所有物体同步到scene view
             PrepareForSceneWindow();
             PrepareBuffer();
-            if(!Cull()) return;
+            if(!Cull(shadowSettings.maxDistance)) return;
 
             Setup();
             DrawVisibleGeometry(true, true);
@@ -89,11 +91,12 @@ namespace Core
             _buffer.Clear();
         }
 
-        bool Cull()
+        bool Cull(float maxShadowDistance)
         {
             ScriptableCullingParameters scriptableCullingParameters;
             if (_camera.TryGetCullingParameters(out scriptableCullingParameters))
             {
+                scriptableCullingParameters.shadowDistance = Mathf.Min(maxShadowDistance, _camera.farClipPlane);
                 _cullingResults = _context.Cull(ref scriptableCullingParameters);
                 return true;
             }
