@@ -7,6 +7,7 @@ namespace Core
     {
         private ScriptableRenderContext _context;
         private Camera _camera;
+        private Lighting _lighting = new Lighting();
 
         private const string BUFFER_NAME = "Render Camera";
 
@@ -33,6 +34,7 @@ namespace Core
             if(!Cull(shadowSettings.maxDistance)) return;
 
             Setup();
+            _lighting.Setup(context);
             DrawVisibleGeometry(true, true);
             DrawGizmos();
             Submit();
