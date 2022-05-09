@@ -7,9 +7,10 @@ CBUFFER_START(UnityPerMaterial)
     float4 _BaseColor;
 CBUFFER_END
 
-void UnlitPassVertex(float3 positionOS) 
+float4 UnlitPassVertex(float3 positionOS : POSITION) :SV_POSITION
 {
-    
+    float3 positionWS = TransformObjectToWorld(positionOS);
+    return TransformObjectToHClip(positionWS);
 }
 
 float4 UnlitPassFrag() :SV_TARGET
