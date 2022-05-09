@@ -34,7 +34,7 @@ namespace Core
             if(!Cull(shadowSettings.maxDistance)) return;
 
             Setup();
-            _lighting.Setup(context);
+            _lighting.Setup(context, _cullingResults, shadowSettings);
             DrawVisibleGeometry(true, true);
             DrawGizmos();
             Submit();

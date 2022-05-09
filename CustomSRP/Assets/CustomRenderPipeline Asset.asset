@@ -12,3 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f69bfd4f9ce95240b0009ec5e9a63ae, type: 3}
   m_Name: CustomRenderPipeline Asset
   m_EditorClassIdentifier: 
+  _shadows:
+    maxDistance: 100
+  useDynamicBatching: 1
+  useGPUInstancing: 1
+  useSRPBatcher: 1

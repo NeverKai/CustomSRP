@@ -5,7 +5,7 @@ struct Light
 {
     float3 color;
     float3 direction;
-}
+};
 
 Light GetDirectionalLight()
 {

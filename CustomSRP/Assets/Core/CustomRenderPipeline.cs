@@ -8,9 +8,13 @@ namespace Core
         private readonly CameraRender _render = new CameraRender();
 
         private ShadowSettings _shadows = default;
-        public CustomRenderPipeline(ShadowSettings shadowSettings)
+        public CustomRenderPipeline(bool useDynamicBatching, 
+            bool useGPUInstancing,
+            bool useSRPBatcher,
+            ShadowSettings shadowSettings)
         {
             _shadows = shadowSettings;
+            GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
         }
 
         protected override void Render(ScriptableRenderContext context, Camera[] cameras)

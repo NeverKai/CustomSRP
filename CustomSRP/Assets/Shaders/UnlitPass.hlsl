@@ -1,12 +1,21 @@
 ﻿#ifndef CUSTOM_UNLIT_PASS_INCLUDED
 #define CUSTOM_UNLIT_PASS_INCLUDED
 
-float4 UnlitPassVertex(float3 positionOS:POSITION) :SV_POSITION
+#include  "../ShaderLibrary/Common.hlsl"
+
+CBUFFER_START(UnityPerMaterial)
+    float4 _BaseColor;
+CBUFFER_END
+
+void UnlitPassVertex(float3 positionOS) 
 {
-    return float4(positionOS, 1.0);
+    
 }
 
-void UnlitPassFrag(){}
+float4 UnlitPassFrag() :SV_TARGET
+{
+    return _BaseColor;
+}
 
 
 #endif
