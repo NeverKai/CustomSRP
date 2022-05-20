@@ -4,6 +4,8 @@
     {
         _MainTex ("Texture", 2D) = "white" {}
         _BaseColor ("Color", Color) = (0.5, 0.5, 0.5, 1.0)
+        [Slider]
+        _Metallic("Metallic", float) = 1
     }
     SubShader
     {

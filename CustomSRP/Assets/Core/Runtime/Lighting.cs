@@ -3,6 +3,9 @@ using UnityEngine.Rendering;
 
 namespace Core
 {
+    /// <summary>
+    /// 照明类，主要处理灯光和物体表面的交互（包括阴影）
+    /// </summary>
     public class Lighting
     {
         private const string BUFFER_NAME = "lighting";
@@ -30,7 +33,6 @@ namespace Core
             
             _shadow.Setup(context, cullingResults, shadowSettings);
             _shadow.Render();
-
         }
 
         void SetupDirectionalLight()
@@ -46,5 +48,4 @@ namespace Core
             _shadow.Cleanup();
         }
     }
-
 }

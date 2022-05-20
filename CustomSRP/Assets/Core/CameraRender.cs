@@ -105,5 +105,10 @@ namespace Core
 
             return false;
         }
+
+        public void Cleanup()
+        {
+            _lighting.Cleanup();
+        }
     }
 }
